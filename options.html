@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GMap Options</title>
+  <style>
+    body: { padding: 10px; }
+  </style>
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
+</head>
+<body>
+
+<form>
+  Origin:<br>
+  <input type="text" name="origin" id="origin" style="width:350px;font-size:10pt;" class="controls" placeholder="Enter a location"><br>
+  Destination:<br>
+  <input type="text" name="destination" id="destination" style="width:350px;font-size:10pt;" class="controls" placeholder="Enter a location"><br>
+  <br>API Key (necessary for traffic data):<br>
+  See <a href="https://developers.google.com/maps/documentation/directions/get-api-key#key">here</a> for more information.<br>
+  <input type="text" name="api_key" id="api_key" style="width:300px;font-size:8pt;">
+  <div id="api_key_valid"></div>
+</form>
+<br>
+<div id="status"></div>
+<button id="save">Save</button>
+
+<script src="options.js"></script>
+
+</body>
+</html>
