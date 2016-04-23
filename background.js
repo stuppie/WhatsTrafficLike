@@ -53,11 +53,11 @@ function get_options_and_directions() {
     chrome.storage.sync.get(["origin","destination","api_key"], function(s) { 
 		if (s.api_key.length > 0) {
 			get_directions(s.origin, s.destination, s.api_key);
-			interval = setInterval(function() { get_directions(origin, destination, api_key); }, 60000 * 5); //5 min
+			interval = setInterval(function() { get_directions(s.origin, s.destination, s.api_key); }, 60000 * 5); //5 min
 		}
 		else {
 			get_directions_without_traffic(s.origin, s.destination);
-			interval = setInterval(function() { get_directions_without_traffic(origin, destination); }, 60000 * 5); //5 min
+			interval = setInterval(function() { get_directions_without_traffic(s.origin, s.destination); }, 60000 * 5); //5 min
 			}
 	});
 }
@@ -72,8 +72,12 @@ function get_directions(origin, destination, api_key) {
 			console.log(resp);
 			if (resp.status == "OK"){
 				var color = 'green';
-				var dur_traffic = resp.routes[0].legs[0].duration_in_traffic.value
-				var dur = resp.routes[0].legs[0].duration.value
+				dur_traffic=[];
+				dur=[];
+				for (route in resp.routes){dur_traffic.push(resp.routes[route].legs[0].duration_in_traffic.value)}
+				var dur_traffic = Math.min.apply(Math, dur_traffic);
+				for (route in resp.routes){dur.push(resp.routes[route].legs[0].duration.value)}
+				var dur = Math.min.apply(Math, dur);
 				console.log((dur_traffic/dur));
 				if ((dur_traffic/dur) > 1.7) {
 				  color = "red";
@@ -83,6 +87,8 @@ function get_directions(origin, destination, api_key) {
 				  color = "green";
 				}
 				generate_set_icon(color, Math.round(dur_traffic/60));
+				var currentdate = new Date();
+				chrome.contextMenus.update(last_updated_menu, {title: "Last Updated " + currentdate.getHours() + ":" + currentdate.getMinutes()});
 				
 			} else {
 				console.log(resp.status + ": " + resp.error_message)
@@ -135,5 +141,9 @@ chrome.contextMenus.create({
       title: "Open Map",
       contexts: ["browser_action"],
       onclick: goto_map_url
+});
+last_updated_menu = chrome.contextMenus.create({
+      title: "Last Updated",
+      contexts: ["browser_action"]
 });
 

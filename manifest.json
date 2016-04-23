@@ -1,6 +1,6 @@
 {
   "name": "What's traffic like?",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "manifest_version": 2,
   "description": "a quick google traffic checker",
   "background": {"page": "background.html" },
