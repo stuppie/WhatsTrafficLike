@@ -40,13 +40,13 @@ function check_api_key(api_key) {
     var resp = JSON.parse(request.responseText);
     chrome.extension.getBackgroundPage().console.log(resp);
     if (resp.status != "OK"){
-       document.getElementById('api_key_valid').textContent = resp.status + ": " + resp.error_message
-       return False;
+       document.getElementById('api_key_valid').textContent = resp.status + ": " + resp.error_message;
+       return false;
     }
-    document.getElementById('api_key_valid').textContent = resp.status
-    return True;
+    document.getElementById('api_key_valid').textContent = resp.status;
+    return true;
   }
-  return False;
+  return false;
 }
 
 document.addEventListener('DOMContentLoaded', restore_options);

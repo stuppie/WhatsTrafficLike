@@ -1,13 +1,12 @@
 {
   "name": "What's traffic like?",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "manifest_version": 2,
   "description": "a quick google traffic checker",
   "background": {"page": "background.html" },
   "browser_action": {
       "name": "Click to open map"
   },
-  "manifest_version": 2,
   "icons": { "128": "icon.png" },
   "permissions": ["https://maps.googleapis.com/*","storage","contextMenus","identity"],
   "options_page": "options.html",
