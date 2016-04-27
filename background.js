@@ -1,4 +1,3 @@
-
 // https://chrome.google.com/webstore/developer/dashboard
 
 function generate_set_icon(mode, time) {
@@ -24,19 +23,8 @@ function generate_set_icon(mode, time) {
     ctx.textAlign = "center";
     ctx.textBaseline = 'middle';
     ctx.fillStyle = settings[mode].text;
-    /*
-     // to fit 3 and 4 char numbers, scale them down
-     // probably the most shitty & frustrating way of doing this ever
-     var metrics = ctx.measureText(time);
-     var border = 1.1
-     var scalex = canvasIcon.width / (border * metrics.width);
-     var scaley = canvasIcon.height / (border * 18);
-     ctx.translate((canvasIcon.width/2)*(1-scalex), (canvasIcon.height/2)*(1-scaley));
-     ctx.scale(scalex, scaley);
-     ctx.fillText(time, canvasIcon.width/2, canvasIcon.height/2);
-     */
 
-    if (time > 99){
+    if (time > 99) {
         time = "99+";
         ctx.font = "bold 11px Arial";
     }
@@ -58,11 +46,11 @@ function is_primetime() {
 var interval = 0;
 function get_options_and_directions() {
     clearInterval(interval);
-    chrome.storage.sync.get(["origin", "destination", "api_key"], function (s) {
+    chrome.storage.sync.get(["origin", "destination", "api_key", "time_wo_traffic"], function (s) {
         if (s.api_key.length > 0) {
-            get_directions(s.origin, s.destination, s.api_key);
+            get_directions(s.origin, s.destination, s.api_key, s.time_wo_traffic);
             interval = setInterval(function () {
-                get_directions(s.origin, s.destination, s.api_key);
+                get_directions(s.origin, s.destination, s.api_key, s.time_wo_traffic);
             }, 60000 * 5); //5 min
         }
         else {
@@ -74,7 +62,7 @@ function get_options_and_directions() {
     });
 }
 
-function get_directions(origin, destination, api_key) {
+function get_directions(origin, destination, api_key, time_wo_traffic) {
     var url = "https://maps.googleapis.com/maps/api/directions/json?origin=" + origin + "&destination=" + destination + "&departure_time=now&mode=driving&alternatives=true&key=" + api_key;
     console.log(url);
     var request = new XMLHttpRequest();
@@ -85,19 +73,14 @@ function get_directions(origin, destination, api_key) {
             if (resp.status == "OK") {
                 var color = 'green';
                 dur_traffic = [];
-                dur = [];
                 for (route in resp.routes) {
                     dur_traffic.push(resp.routes[route].legs[0].duration_in_traffic.value)
                 }
                 var dur_traffic = Math.min.apply(Math, dur_traffic);
-                for (route in resp.routes) {
-                    dur.push(resp.routes[route].legs[0].duration.value)
-                }
-                var dur = Math.min.apply(Math, dur);
-                console.log((dur_traffic / dur));
-                if ((dur_traffic / dur) > 1.7) {
+                console.log((dur_traffic / time_wo_traffic));
+                if ((dur_traffic / time_wo_traffic) > 1.7) {
                     color = "red";
-                } else if ((dur_traffic / dur) > 1.2) {
+                } else if ((dur_traffic / time_wo_traffic) > 1.2) {
                     color = "yellow";
                 } else {
                     color = "green";
@@ -131,8 +114,12 @@ function get_directions_without_traffic(origin, destination) {
     request.send();
 }
 
+
 function goto_map_url() {
-    chrome.storage.sync.get(["origin", "destination"], function (s) {
+    chrome.storage.sync.get({
+        origin: 'North Park, CA',
+        destination: 'La Jolla, CA',
+    }, function (s) {
         var map_url = "https://www.google.com/maps/dir/" + s.origin + "/" + s.destination;
         chrome.tabs.create({url: map_url});
     });
