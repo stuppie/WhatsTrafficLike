@@ -43,7 +43,12 @@ function get_time_without_traffic(origin, destination) {
     if (request.status === 200) {
         var resp = JSON.parse(request.responseText);
         chrome.extension.getBackgroundPage().console.log(resp);
-        return resp.routes[0].legs[0].duration.value;
+
+        dur = [];
+        for (route in resp.routes) {
+            dur.push(resp.routes[route].legs[0].duration.value)
+        }
+        return Math.min.apply(Math, dur);
     }
 }
 
